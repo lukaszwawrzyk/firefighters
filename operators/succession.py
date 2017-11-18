@@ -5,7 +5,7 @@ from utils import sort, _tuple_to_score
 
 
 def rank_succession(population, k):
-    weights_sum = sum(algoscore.to_fitness() for _, algoscore in population)
+    weights_sum = sum(fitness for _, fitness in population)
     sorted_population = sort(population)
 
     result = list()

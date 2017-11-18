@@ -4,7 +4,7 @@ from visualize import visualize_simulation
 
 if __name__ == '__main__':
     graph_file = 'graphs/random.txt'
-    ff_per_step = 4
+    ff_per_step = 2
 
     graph = Graph.from_file(graph_file)
     solution = range(1, 10)

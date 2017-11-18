@@ -1,6 +1,6 @@
 def _tuple_to_score(t):
-    ch, algo_score = t
-    return algo_score.to_fitness()
+    ch, fitness = t
+    return fitness
 
 
 def _tuple_to_chromosome(t):
