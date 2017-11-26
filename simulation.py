@@ -6,14 +6,14 @@ logger = getLogger("simulation")
 
 
 class Score(object):
-    def __init__(self, extinguishing_time, nodes_saved, nodes_occupied_by_ff):
+    def __init__(self, putting_out_time, nodes_saved, nodes_occupied_by_ff):
         # in iterations
-        self.extinguishing_time = extinguishing_time
+        self.putting_out_time = putting_out_time
         self.nodes_saved = nodes_saved
         self.nodes_occupied_by_ff = nodes_occupied_by_ff
 
     def __str__(self):
-        return "[T: {}, SAVED: {}, SAVED_FF: {}]".format(self.extinguishing_time, self.nodes_saved,
+        return "[T: {}, SAVED: {}, SAVED_FF: {}]".format(self.putting_out_time, self.nodes_saved,
                                                          self.nodes_occupied_by_ff)
 
 
@@ -95,5 +95,5 @@ def simulation(graph, solution, ff_per_step):
     saved_ff, saved_no_ff = evaluate_result(graph)
     all_saved = saved_ff + saved_no_ff
     logger.info("Result: {} (saved nodes, from them {} occupied by firefighters)".format(all_saved, saved_ff))
-    logger.info("Iterations elapsed: {}".format(iterations))
+
     return transitions, Score(iterations, all_saved, saved_ff)

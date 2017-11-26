@@ -23,38 +23,63 @@ def generate_edges(vertices_num, density):
     return edges_num, edges
 
 
-def generate_file_data(out_file, vertices_num, density, starting_vertices_num):
+def generate_tree_edges(child_probability=0.7, max_nodes=150):
+    tree_size = 0
+    root = 0
+    current_node = 0
+    edges = list()
 
-    if density < 2 * (float(vertices_num - 1) / (vertices_num * (vertices_num - 1))):
-        raise ValueError("Density too low, cannot generate connected graph")
+    stack = [root]
+    while stack:
+        node = stack.pop(0)
+        # try to generate two childs
+        for _ in (0, 1):
+            if random.random() < child_probability and current_node < max_nodes:
+                tree_size += 1
+                current_node += 1
+                child = current_node
+                stack.append(child)
+                edges.append((node, child))
 
-    edges_num, edges = generate_edges(vertices_num, density)
+    return tree_size, current_node + 1, edges
 
-    # make graph connected by connecting unconnected nodes to graph
-    # and removing edges that will not make graph unconnected again
-    # each time we remove an edge we have to check the conditions again
-    while True:
-        nodes_degree = Counter()
-        for v_start, v_end in edges:
-            nodes_degree[v_start] += 1
-            nodes_degree[v_end] += 1
 
-        unconnected_nodes = set([node for node in xrange(vertices_num) if node not in nodes_degree])
+def generate_file_data(out_file, vertices_num, density, starting_vertices_num, tree=False):
+    if tree:
+        # in case of tree vertices_num is maximum number of vertices
+        edges_num, vertices_num, edges = generate_tree_edges(child_probability=density, max_nodes=vertices_num)
+    else:
 
-        if not unconnected_nodes:
-            break
+        if density < 2 * (float(vertices_num - 1) / (vertices_num * (vertices_num - 1))):
+            raise ValueError("Density too low, cannot generate connected graph")
 
-        # add an edge from unconnected node to a random node
-        edges.append((unconnected_nodes.pop(), random.randint(0, vertices_num - 1)))
+        edges_num, edges = generate_edges(vertices_num, density)
 
-        # find each edge which removal will not make graph unconnected
-        redundant_edges = set()
-        for v_start, v_end in edges:
-            if nodes_degree[v_start] >= 2 and nodes_degree[v_end] >= 2:
-                redundant_edges.add((v_start, v_end))
+        # make graph connected by connecting unconnected nodes to graph
+        # and removing edges that will not make graph unconnected again
+        # each time we remove an edge we have to check the conditions again
+        while True:
+            nodes_degree = Counter()
+            for v_start, v_end in edges:
+                nodes_degree[v_start] += 1
+                nodes_degree[v_end] += 1
 
-        # remove one redundant edge
-        edges.remove(redundant_edges.pop())
+            unconnected_nodes = set([node for node in xrange(vertices_num) if node not in nodes_degree])
+
+            if not unconnected_nodes:
+                break
+
+            # add an edge from unconnected node to a random node
+            edges.append((unconnected_nodes.pop(), random.randint(0, vertices_num - 1)))
+
+            # find each edge which removal will not make graph unconnected
+            redundant_edges = set()
+            for v_start, v_end in edges:
+                if nodes_degree[v_start] >= 2 and nodes_degree[v_end] >= 2:
+                    redundant_edges.add((v_start, v_end))
+
+            # remove one redundant edge
+            edges.remove(redundant_edges.pop())
 
     starting_vertices = random.sample(xrange(vertices_num), starting_vertices_num)
 
@@ -100,4 +125,3 @@ if __name__ == '__main__':
                        vertices_num=args.vertices,
                        density=args.density,
                        starting_vertices_num=args.starting_vertices)
-

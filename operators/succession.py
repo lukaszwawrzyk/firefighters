@@ -1,11 +1,10 @@
 import random
-from heapq import nlargest
-
 from utils import sort, _tuple_to_score
+from frameworks import find_n_best_solutions
 
 
 def rank_succession(population, k):
-    weights_sum = sum(fitness for _, fitness in population)
+    weights_sum = sum(algoscore.to_fitness() for _, algoscore in population)
     sorted_population = sort(population)
 
     result = list()
@@ -21,12 +20,8 @@ def rank_succession(population, k):
     return result
 
 
-def _find_n_best_solutions(population, n=1):
-    return nlargest(n, population, key=lambda (specimen, score): score.to_fitness())
-
-
 def best(population, k):
-    return _find_n_best_solutions(population, k)
+    return find_n_best_solutions(population, k)
 
 
 def best_then_uniform_succession(population, k, perc_best=0.20):

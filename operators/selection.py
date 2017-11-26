@@ -1,7 +1,7 @@
 import random
 
 from heapq import nlargest
-from utils import _tuple_to_score, sort_extract
+from utils import _tuple_to_chromosome, _tuple_to_score, sort_extract
 
 
 def _roulette_select(weighted_population, k):
@@ -25,7 +25,7 @@ def _roulette_select(weighted_population, k):
 def tournament_selection(population, k):
     """
 
-    :param population: list of tuples (chromosome, fitness)
+    :param population: list of tuples (chromosome, AlgoScore)
     :param k: number of individuals to be selected from population
     :return:
     """
@@ -47,12 +47,13 @@ def tournament_selection(population, k):
 def roulette_wheel_selection(population, k):
     """
 
-    :param population: list of tuples (chromosome, fitness)
+    :param population: list of tuples (chromosome, AlgoScore)
     :param k: number of individuals to be selected from population
     :return:
     """
 
-    return _roulette_select(population, k)
+    population_with_fitness_extracted = map(lambda (ch, algoscore): (ch, algoscore.to_fitness()), population)
+    return _roulette_select(population_with_fitness_extracted, k)
 
 
 def rank_selection(population, k):
